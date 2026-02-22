@@ -16,12 +16,17 @@ interface CardResult {
   rarity: string | null;
 }
 
+interface ScanCandidate {
+  card: CardResult;
+  confidence: number;
+}
+
 interface ScanResponse {
   success: boolean;
   confidence: number;
   card: CardResult | null;
   addedToCollection?: boolean;
-  candidates?: CardResult[];
+  candidates?: ScanCandidate[];
 }
 
 type Phase = 'choose' | 'camera' | 'preview' | 'hints' | 'scanning' | 'result';
@@ -134,11 +139,11 @@ export default function ScanPage() {
     }
   };
 
-  const handleConfirmCandidate = async (card: CardResult) => {
+  const handleConfirmCandidate = async (candidate: ScanCandidate) => {
     setError('');
     try {
-      await api.post('/scan/confirm', { cardId: card.id });
-      setResult({ success: true, confidence: 1, card, addedToCollection: true });
+      await api.post('/scan/confirm', { cardId: candidate.card.id });
+      setResult({ success: true, confidence: 1, card: candidate.card, addedToCollection: true });
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to add card');
     }
@@ -362,10 +367,10 @@ export default function ScanPage() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                 {result.candidates.map((c) => (
-                  <div key={c.id} style={{ backgroundColor: '#16213e', borderRadius: '10px', padding: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div key={c.card.id} style={{ backgroundColor: '#16213e', borderRadius: '10px', padding: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: 600 }}>{c.name}</div>
-                      <div style={{ fontSize: '12px', color: '#8899aa' }}>{c.set_name} · {c.number}</div>
+                      <div style={{ fontSize: '14px', fontWeight: 600 }}>{c.card.name}</div>
+                      <div style={{ fontSize: '12px', color: '#8899aa' }}>{c.card.set_name} · {c.card.number}</div>
                     </div>
                     <button
                       onClick={() => handleConfirmCandidate(c)}

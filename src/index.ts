@@ -159,6 +159,12 @@ router.post("/collections", authenticateToken, (req: AuthenticatedRequest, res) 
 
 router.post("/collections/:id/items", authenticateToken, (req: AuthenticatedRequest, res) => {
   try {
+    const userId = req.user!.userId;
+    const collection = db.prepare("SELECT * FROM collections WHERE id = ? AND user_id = ?").get(req.params.id, userId);
+    if (!collection) {
+      res.status(404).json({ error: "Collection not found" });
+      return;
+    }
     const { cardId, quantity, purchasePrice } = req.body;
     if (!cardId) {
       res.status(400).json({ error: "cardId is required" });
@@ -349,13 +355,18 @@ router.post("/scan/confirm", authenticateToken, (req: AuthenticatedRequest, res)
 
 router.post("/pregrade", authenticateToken, checkCredit("pregrade"), upload.single("image"), (req: AuthenticatedRequest, res) => {
   try {
+    const userId = req.user!.userId;
     const { collectionItemId } = req.body;
     if (!collectionItemId) {
       res.status(400).json({ error: "collectionItemId is required" });
       return;
     }
 
-    const item = db.prepare("SELECT * FROM collection_items WHERE id = ?").get(collectionItemId);
+    const item = db.prepare(`
+      SELECT ci.* FROM collection_items ci
+      JOIN collections c ON c.id = ci.collection_id
+      WHERE ci.id = ? AND c.user_id = ?
+    `).get(collectionItemId, userId);
     if (!item) {
       res.status(404).json({ error: "Collection item not found" });
       return;
@@ -372,6 +383,16 @@ router.post("/pregrade", authenticateToken, checkCredit("pregrade"), upload.sing
 
 router.get("/grades/:collectionItemId", authenticateToken, (req: AuthenticatedRequest, res) => {
   try {
+    const userId = req.user!.userId;
+    const item = db.prepare(`
+      SELECT ci.id FROM collection_items ci
+      JOIN collections c ON c.id = ci.collection_id
+      WHERE ci.id = ? AND c.user_id = ?
+    `).get(req.params.collectionItemId, userId);
+    if (!item) {
+      res.status(404).json({ error: "Collection item not found" });
+      return;
+    }
     const results = getGradeHistory(req.params.collectionItemId as string);
     res.json(results);
   } catch (err) {
@@ -491,7 +512,7 @@ router.patch("/alerts/:id/read", authenticateToken, (req: AuthenticatedRequest, 
   }
 });
 
-router.post("/admin/run-alerts", (_req, res) => {
+router.post("/admin/run-alerts", authenticateToken, (req: AuthenticatedRequest, res) => {
   try {
     const priceSpikes = detectPriceSpikes();
     const portfolioChanges = detectPortfolioChanges();
@@ -503,7 +524,7 @@ router.post("/admin/run-alerts", (_req, res) => {
   }
 });
 
-router.post("/admin/compute-roi", (_req, res) => {
+router.post("/admin/compute-roi", authenticateToken, (req: AuthenticatedRequest, res) => {
   try {
     const result = computeAllROI();
     res.json(result);
@@ -513,7 +534,7 @@ router.post("/admin/compute-roi", (_req, res) => {
   }
 });
 
-router.post("/admin/reset-credits", (_req, res) => {
+router.post("/admin/reset-credits", authenticateToken, (req: AuthenticatedRequest, res) => {
   try {
     const result = resetMonthlyCredits();
     res.json(result);
@@ -523,7 +544,7 @@ router.post("/admin/reset-credits", (_req, res) => {
   }
 });
 
-router.post("/admin/ingest-prices", (_req, res) => {
+router.post("/admin/ingest-prices", authenticateToken, (req: AuthenticatedRequest, res) => {
   try {
     const inserted = ingestPrices();
     res.json({ inserted });

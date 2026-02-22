@@ -170,9 +170,13 @@ export default function GradesPage() {
         setLoading(false);
         return;
       }
-      const col = colRes.data[0];
-      const itemsRes = await api.get(`/collections/${col.id}/items`);
-      const items: CollectionItem[] = itemsRes.data;
+      const collections: { id: string }[] = colRes.data;
+      const allItems: CollectionItem[] = [];
+      await Promise.all(collections.map(async (col) => {
+        const itemsRes = await api.get(`/collections/${col.id}/items`);
+        allItems.push(...itemsRes.data);
+      }));
+      const items: CollectionItem[] = allItems;
 
       const graded: GradedItem[] = [];
       const ungraded: CollectionItem[] = [];

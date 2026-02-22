@@ -33,15 +33,6 @@ const RANGES = [
   { key: 'all', label: 'ALL' },
 ];
 
-const RARITY_COLORS: Record<string, string> = {
-  common: '#888',
-  uncommon: '#4caf50',
-  rare: '#2196f3',
-  'holo rare': '#9c27b0',
-  'ultra rare': '#ffc107',
-  'secret rare': '#e94560',
-};
-
 function formatPrice(n: number | null | undefined): string {
   if (n == null) return '--';
   return `$${n.toFixed(2)}`;
