@@ -620,6 +620,14 @@ if (fs.existsSync(clientPath)) {
 
 initializeDatabase();
 
+// Auto-seed cards if database is empty
+const cardCount = db.prepare("SELECT COUNT(*) as count FROM cards_master").get() as { count: number };
+if (cardCount.count === 0) {
+  console.log("Empty database detected, seeding cards...");
+  const { seedCards } = require("./db/seed-data");
+  seedCards();
+}
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
