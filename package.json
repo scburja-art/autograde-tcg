@@ -37,7 +37,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "string-similarity": "^4.0.4",
-    "uuid": "^13.0.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
