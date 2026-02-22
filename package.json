@@ -23,6 +23,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=18"
+  },
   "type": "commonjs",
   "dependencies": {
     "@types/multer": "^2.0.0",
