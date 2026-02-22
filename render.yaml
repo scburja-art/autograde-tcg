@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: autograde-tcg
+    runtime: node
+    buildCommand: npm install && cd client && npm install && cd .. && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production

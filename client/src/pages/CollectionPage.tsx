@@ -210,7 +210,7 @@ function PriceChartModal({ cardId, cardName, currentPrice, onClose }: { cardId: 
                 </defs>
                 <XAxis dataKey="snapshot_date" tickFormatter={formatDate} tick={{ fill: '#8899aa', fontSize: 10 }} axisLine={false} tickLine={false} minTickGap={40} />
                 <YAxis tickFormatter={(v: number) => `$${v}`} tick={{ fill: '#8899aa', fontSize: 10 }} axisLine={false} tickLine={false} width={45} />
-                <Tooltip contentStyle={{ backgroundColor: '#16213e', border: '1px solid #0f3460', borderRadius: '8px', fontSize: '12px' }} labelStyle={{ color: '#8899aa' }} labelFormatter={formatDate} formatter={(value: number) => [formatPrice(value), 'Price']} />
+                <Tooltip contentStyle={{ backgroundColor: '#16213e', border: '1px solid #0f3460', borderRadius: '8px', fontSize: '12px' }} labelStyle={{ color: '#8899aa' }} labelFormatter={(d: any) => formatDate(d)} formatter={(value: any) => [formatPrice(value), 'Price']} />
                 <Area type="monotone" dataKey="price_usd" stroke="#e94560" strokeWidth={2} fill="url(#priceGrad)" dot={false} activeDot={{ r: 3, fill: '#e94560', stroke: '#16213e', strokeWidth: 2 }} />
               </AreaChart>
             </ResponsiveContainer>

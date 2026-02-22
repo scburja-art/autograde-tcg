@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "build": "tsc",
+    "build:client": "cd client && npm run build",
+    "build:server": "tsc && cp src/db/schema.sql dist/db/schema.sql",
+    "build": "npm run build:client && npm run build:server",
+    "start": "node dist/index.js",
     "seed": "ts-node src/db/seed.ts",
     "ingest": "ts-node -e \"const { ingestPrices } = require('./src/services/priceIngestion'); console.log('Inserted:', ingestPrices())\"",
     "seed:user": "ts-node src/db/seedTestUser.ts",

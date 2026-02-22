@@ -173,8 +173,8 @@ export default function PortfolioPage() {
                 contentStyle={{ backgroundColor: '#1a1a2e', border: '1px solid #0f3460', borderRadius: '8px', fontSize: '13px' }}
                 labelStyle={{ color: '#8899aa' }}
                 itemStyle={{ color: '#e94560' }}
-                labelFormatter={formatDate}
-                formatter={(value: number) => [formatPrice(value), 'Value']}
+                labelFormatter={(d: any) => formatDate(d)}
+                formatter={(value: any) => [formatPrice(value), 'Value']}
               />
               <Area
                 type="monotone"

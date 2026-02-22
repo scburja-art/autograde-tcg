@@ -609,6 +609,15 @@ router.delete("/favorites/:cardId", authenticateToken, (req: AuthenticatedReques
 
 app.use("/api", router);
 
+// Serve built frontend in production
+const clientPath = path.join(__dirname, "../dist/client");
+if (fs.existsSync(clientPath)) {
+  app.use(express.static(clientPath));
+  app.use((_req, res) => {
+    res.sendFile(path.join(clientPath, "index.html"));
+  });
+}
+
 initializeDatabase();
 
 app.listen(PORT, () => {
